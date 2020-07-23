@@ -246,7 +246,7 @@ def get_cmd_parser():  # pylint: disable=too-many-statements
         '-sapi', '--speech-api',
         metavar=_('API_code'),
         default='gsv2',
-        choices=["gsv2", "gcsv1", "xfyun", "baidu"],
+        choices=["gsv2", "gcsv1", "xfyun", "baidu", "deepspeech"],
         help=_("Choose which Speech-to-Text API to use. "
                "Currently support: "
                "gsv2: Google Speech V2 (https://github.com/gillesdemey/google-speech-v2). "

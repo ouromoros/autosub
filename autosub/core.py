@@ -30,6 +30,7 @@ from autosub import sub_utils
 from autosub import ffmpeg_utils
 from autosub import constants
 from autosub import exceptions
+from .deepspeech import DeepSpeech
 
 CORE_TEXT = gettext.translation(domain=__name__,
                                 localedir=constants.LOCALE_PATH,
@@ -258,6 +259,37 @@ def bulk_audio_conversion(  # pylint: disable=too-many-arguments, too-many-local
         pool.join()
         return None
     return audio_fragments
+
+
+def ds_to_text(audio_fragments, concurrency=8):
+    result = []
+    widgets = [_("Speech-to-Text: "),
+               progressbar.Percentage(), ' ',
+               progressbar.Bar(), ' ',
+               progressbar.ETA()]
+    pbar = progressbar.ProgressBar(widgets=widgets, maxval=len(audio_fragments)).start()
+    model = './deepspeech-0.7.4-models.pbmm'
+    scorer = './deepspeech-0.7.4-models.scorer'
+    ds = DeepSpeech(model=model, scorer=scorer)
+    # pool = multiprocessing.Pool(concurrency)
+    
+    # for i, out in enumerate(pool.imap(lambda f: ds.stt(f), audio_fragments)):
+    #     result.append(out)
+    #     pbar.update(i)
+
+    for i, file in enumerate(audio_fragments):
+        # # convert to format
+        # out_file = file + '.wav'
+        # cmd = f'ffmpeg -loglevel panic -i {file} -bitexact -acodec pcm_s16le -ac 1 -ar 16000 {out_file}'
+        # p = subprocess.Popen(cmd)
+        # p.wait()
+        # deepspeech
+        # print(file)
+        out = ds.stt(file)
+        result.append(out)
+        pbar.update(i)
+    pbar.finish()
+    return result
 
 
 def gsv2_to_text(  # pylint: disable=too-many-locals,too-many-arguments,too-many-branches,too-many-statements

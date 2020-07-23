@@ -1351,6 +1351,11 @@ def audio_or_video_prcs(  # pylint: disable=too-many-branches, too-many-statemen
     except KeyError:
         pass
 
+    print(args.audio_split_cmd)
+    if args.speech_api == 'deepspeech':
+        args.audio_split_cmd = 'ffmpeg -y -ss {start} -t {dura} -vn -loglevel error -i "{in_}" -bitexact -acodec pcm_s16le -ac 1 -ar 16000 {out_}'
+        args.api_suffix = '.wav'
+
     audio_fragments = core.bulk_audio_conversion(
         source_file=args.input,
         output=args.output,
@@ -1379,7 +1384,9 @@ def audio_or_video_prcs(  # pylint: disable=too-many-branches, too-many-statemen
     except KeyError:
         result_list = None
 
-    if args.speech_api == "gsv2":
+    if args.speech_api == 'deepspeech':
+        text_list = core.ds_to_text(audio_fragments)
+    elif args.speech_api == "gsv2":
         # Google speech-to-text v2
         if args.http_speech_api:
             gsv2_api_url = "http://" + \
