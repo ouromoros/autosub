@@ -1169,3 +1169,19 @@ binaries\ffmpeg-normalize-pyinstaller\ffmpeg-normalize.exe
 ```
 
 <escape><a href = "#TOC">&nbsp;↑&nbsp;</a></escape>
+
+Build with pynsist:
+
+```
+pynsist .\pynsist.cfg
+```
+
+Then copy executables to the installed path:
+
+```
+ffmpeg.exe
+ffmpeg-normalize.exe
+ffprobe.exe
+deepspeech-0.7.4-models.pbmm
+deepspeech-0.7.4-models.scorer
+```

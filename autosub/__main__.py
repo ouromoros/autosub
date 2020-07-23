@@ -17,9 +17,13 @@ if __package__ is None and not hasattr(sys, "frozen"):
 
 # Any changes to the path and your own modules
 
-if __name__ == "__main__":
+def main():
     # On Windows calling this function is necessary.
     if sys.platform.startswith('win'):
         multiprocessing.freeze_support()
     import autosub
     autosub.main()
+
+
+if __name__ == "__main__":
+    main()
