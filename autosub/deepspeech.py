@@ -81,7 +81,6 @@ class VersionAction(argparse.Action):
         super(VersionAction, self).__init__(nargs=0, *args, **kwargs)
 
     def __call__(self, *args, **kwargs):
-        print('DeepSpeech ', version())
         exit(0)
 
 

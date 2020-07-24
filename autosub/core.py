@@ -261,33 +261,58 @@ def bulk_audio_conversion(  # pylint: disable=too-many-arguments, too-many-local
     return audio_fragments
 
 
+def ds_worker(in_q, out_q):
+    model = './deepspeech-0.7.4-models.pbmm'
+    scorer = './deepspeech-0.7.4-models.scorer'
+    ds = DeepSpeech(model=model, scorer=scorer)
+
+    while True:
+        i, f = in_q.get()
+        s = ds.stt(f)
+        out_q.put((i, s))
+
 def ds_to_text(audio_fragments, concurrency=8):
     result = []
-    widgets = [_("Speech-to-Text: "),
+    widgets = [("Speech-to-Text: "),
                progressbar.Percentage(), ' ',
                progressbar.Bar(), ' ',
                progressbar.ETA()]
     pbar = progressbar.ProgressBar(widgets=widgets, maxval=len(audio_fragments)).start()
-    model = './deepspeech-0.7.4-models.pbmm'
-    scorer = './deepspeech-0.7.4-models.scorer'
-    ds = DeepSpeech(model=model, scorer=scorer)
-    # pool = multiprocessing.Pool(concurrency)
+    ps = []
+    in_queue = multiprocessing.Queue()
+    out_queue = multiprocessing.Queue()
+    for _ in range(concurrency):
+        p = multiprocessing.Process(target=ds_worker, args=(in_queue, out_queue))
+        ps.append(p)
+        p.start()
     
-    # for i, out in enumerate(pool.imap(lambda f: ds.stt(f), audio_fragments)):
+    for i, f in enumerate(audio_fragments):
+        in_queue.put((i, f))
+
+    result = [None for _ in range(len(audio_fragments))]
+    
+    for c in range(len(audio_fragments)):
+        i, out = out_queue.get()
+        pbar.update(c)
+        result[i] = out
+
+    for p in ps:
+        p.terminate()
+
+    # model = './deepspeech-0.7.4-models.pbmm'
+    # scorer = './deepspeech-0.7.4-models.scorer'
+    # ds = DeepSpeech(model=model, scorer=scorer)
+    # for i, file in enumerate(audio_fragments):
+    #     # # convert to format
+    #     # out_file = file + '.wav'
+    #     # cmd = f'ffmpeg -loglevel panic -i {file} -bitexact -acodec pcm_s16le -ac 1 -ar 16000 {out_file}'
+    #     # p = subprocess.Popen(cmd)
+    #     # p.wait()
+    #     # deepspeech
+    #     # print(file)
+    #     out = ds.stt(file)
     #     result.append(out)
     #     pbar.update(i)
-
-    for i, file in enumerate(audio_fragments):
-        # # convert to format
-        # out_file = file + '.wav'
-        # cmd = f'ffmpeg -loglevel panic -i {file} -bitexact -acodec pcm_s16le -ac 1 -ar 16000 {out_file}'
-        # p = subprocess.Popen(cmd)
-        # p.wait()
-        # deepspeech
-        # print(file)
-        out = ds.stt(file)
-        result.append(out)
-        pbar.update(i)
     pbar.finish()
     return result
 
