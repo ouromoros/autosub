@@ -17,7 +17,7 @@ import operator
 import progressbar
 import pysubs2
 import wcwidth
-import docx
+# import docx
 import googletrans
 import auditok
 
@@ -899,51 +899,27 @@ class ManualTranslator:  # pylint: disable=too-few-public-methods
         """
         Translate text manually.
         """
-        if self.trans_doc_name.endswith("docx"):
-            trans_doc = docx.Document()
-            trans_doc.add_paragraph(text=text)
-            trans_doc.save(self.trans_doc_name)
-            if self.input_m:
-                self.input_m(_("Wait for the manual translation. "
-                               "Press Enter to continue."))
-            else:
-                print(_("Wait 20 seconds for the manual translation. "))
-                widgets = [_("Manual translation: "),
-                           progressbar.Percentage(), ' ',
-                           progressbar.Bar(), ' ',
-                           progressbar.ETA()]
-                pbar = progressbar.ProgressBar(widgets=widgets, maxval=20).start()
-                for i in range(20):
-                    pbar.update(i)
-                    time.sleep(1)
-                pbar.finish()
-            trans_doc = docx.Document(self.trans_doc_name)
-            para_list = []
-            for para in trans_doc.paragraphs:
-                para_list.append(para.text)
-            trans_doc_str = '\n'.join(para_list)
+        trans_doc_name = sub_utils.str_to_file(
+            str_=text,
+            output=self.trans_doc_name,
+            input_m=self.input_m)
+        if self.input_m:
+            self.input_m(_("Wait for the manual translation. "
+                            "Press Enter to continue."))
         else:
-            trans_doc_name = sub_utils.str_to_file(
-                str_=text,
-                output=self.trans_doc_name,
-                input_m=self.input_m)
-            if self.input_m:
-                self.input_m(_("Wait for the manual translation. "
-                               "Press Enter to continue."))
-            else:
-                print(_("Wait 20 seconds for the manual translation. "))
-                widgets = [_("Manual translation: "),
-                           progressbar.Percentage(), ' ',
-                           progressbar.Bar(), ' ',
-                           progressbar.ETA()]
-                pbar = progressbar.ProgressBar(widgets=widgets, maxval=20).start()
-                for i in range(20):
-                    pbar.update(i)
-                    time.sleep(1)
-                pbar.finish()
-            trans_doc = open(trans_doc_name, encoding=constants.DEFAULT_ENCODING)
-            trans_doc_str = trans_doc.read()
-            trans_doc.close()
+            print(_("Wait 20 seconds for the manual translation. "))
+            widgets = [_("Manual translation: "),
+                        progressbar.Percentage(), ' ',
+                        progressbar.Bar(), ' ',
+                        progressbar.ETA()]
+            pbar = progressbar.ProgressBar(widgets=widgets, maxval=20).start()
+            for i in range(20):
+                pbar.update(i)
+                time.sleep(1)
+            pbar.finish()
+        trans_doc = open(trans_doc_name, encoding=constants.DEFAULT_ENCODING)
+        trans_doc_str = trans_doc.read()
+        trans_doc.close()
         constants.DELETE_PATH(self.trans_doc_name)
         return googletrans.client.Translated(
             src=src, dest=dest, origin="manual",

@@ -9,5 +9,4 @@ websocket-client>=0.56.0
 fuzzywuzzy>=0.18.0
 python-Levenshtein>=0.12.0
 send2trash>=1.5.0
-python-docx
 deepspeech

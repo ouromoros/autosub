@@ -17,6 +17,6 @@ LONG_DESCRIPTION = (
       'by using ffmpeg, '
       'transcribe speech based on several speech APIs and '
       'translate the subtitles\' text by using py-googletrans.'))
-AUTHOR = 'Bing Ling'
-AUTHOR_EMAIL = 'binglinggroup@outlook.com'
-HOMEPAGE = 'https://github.com/BingLingGroup/autosub'
+AUTHOR = 'ouromoros'
+AUTHOR_EMAIL = 'ouromoros@gmail.com'
+HOMEPAGE = 'https://github.com/ouromoros/autosub'

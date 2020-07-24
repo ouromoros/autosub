@@ -332,7 +332,7 @@ def get_cmd_parser():  # pylint: disable=too-many-statements
     trans_group.add_argument(
         '-tf', '--translation-format',
         metavar=_('format'),
-        default='docx',
+        default='txt',
         choices=["docx", "txt"],
         help=_("Choose which output format for manual translation to use. "
                "Currently support: docx, txt. "

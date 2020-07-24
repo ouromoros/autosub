@@ -1,4 +1,0 @@
-include README.md
-include LICENSE
-include data/locale/zh_CN/LC_MESSAGES/*po
-include data/locale/zh_CN/LC_MESSAGES/*mo
